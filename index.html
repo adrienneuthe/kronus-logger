@@ -42,14 +42,14 @@
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytNn6q1M-SMO0dKDRjnDX6lzG5lkm7DD5VO1PkbboUxzIVm0nM1MdT5k-YZaCb3xzozw/exec';
 const CLIENTS = {
-  michael:  { name: 'Michael G. Branson',   status: 'Submitted' },
-  sam:      { name: 'Sam Meenasian',        status: 'Submitted' },
-  kyle:     { name: 'Kyle Turner',          status: 'Submitted' },
-  pablo:    { name: 'Pablo Giordano',       status: 'Submitted' },
-  kristen:  { name: 'Kristen Kuminski',     status: 'Waiting Approval' },
-  michaels: { name: 'Michael Salvaggio',    status: 'Submitted' },
-  andrew:   { name: 'Andrew Gardner',       status: 'Submitted' },
-  sasha:    { name: 'Sasha Antoun',         status: 'Submitted' }
+  michael:  { name: 'Michael G. Branson',  sheetId: '1jQ28MTnfbl8L6im577p5LSeMWx2NLsnL_EW1YXfPw_k', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
+  sam:      { name: 'Sam Meenasian',       sheetId: '1JfzibaNs0uLXfUOs9TZq5nN1K4lEyZCc7PQsX2_eVIo', tab: 'Media Oppprtunities', extra: false, status: 'Submitted' },
+  kyle:     { name: 'Kyle Turner',         sheetId: '10RKP_dODJ98x4iWmgVJVwdyJ7-tMW8bYGSDPdNl1Q6w', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
+  pablo:    { name: 'Pablo Giordano',      sheetId: '1rECwTXxdUZ-lOsEodOeJxcHzAWVvntmeZl7AsSBjds8', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
+  kristen:  { name: 'Kristen Kuminski',    sheetId: '10mq1lvv6G2_FHhK0kKh7vfjZ2BSZfp6GF_nI2eIEOxM', tab: 'Media Opportunities',  extra: true,  status: 'Waiting Approval' },
+  michaels: { name: 'Michael Salvaggio',   sheetId: '1g7VLPxgrR9aHA0DIoj18mO-aS8GCJj0KYWrgf31f4jM', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
+  andrew:   { name: 'Andrew Gardner',      sheetId: '1f0D-sIey7lUE2e1xwIoSoNl6aXLYYUTRpiEcozjIIMQ', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
+  sasha:    { name: 'Sasha Antoun',        sheetId: '1M9I8U67lcjncVbAJMMbMYWNlm7EmR5qPpbxLnvnLmeY', tab: 'Media Opportunities',  extra: false, status: 'Submitted' }
 };
 function getToday() {
   return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -73,7 +73,8 @@ async function logEntry() {
   btn.disabled = true;
   showStatus('Logging to ' + client.name + '...', 'loading');
   try {
-    const resp = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ client: clientKey, date: getToday(), outlet, brief, comment, status: client.status }) });
+    const payload = { client: clientKey, sheetId: client.sheetId, tab: client.tab, extra: client.extra, date: getToday(), outlet, brief, comment, status: client.status };
+    const resp = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
     const data = await resp.json();
     if (data.success) { showStatus('Logged to ' + client.name + ' — ' + outlet, 'success'); document.getElementById('entry').value = ''; }
     else { showStatus('Error: ' + (data.error || 'Unknown error'), 'error'); }
