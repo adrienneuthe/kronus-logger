@@ -73,7 +73,7 @@ async function logEntry() {
   btn.disabled = true;
   showStatus('Logging to ' + client.name + '...', 'loading');
   try {
-    const payload = { client: clientKey, sheetId: client.sheetId, tab: client.tab, extra: client.extra, date: getToday(), outlet, brief, comment, status: client.status };
+    const payload = { sheetId: client.sheetId, tab: client.tab, extra: client.extra, date: getToday(), outlet, brief, comment, status: client.status };
     const resp = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
     const data = await resp.json();
     if (data.success) { showStatus('Logged to ' + client.name + ' — ' + outlet, 'success'); document.getElementById('entry').value = ''; }
