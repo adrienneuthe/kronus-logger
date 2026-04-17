@@ -32,23 +32,24 @@
   <p class="subtitle">Paste the one-line entry from Claude, then hit Log.</p>
   <div class="info-box">
     <strong>Format:</strong> client | outlet | brief | comment<br>
-    <strong>Clients:</strong> kelly &nbsp;·&nbsp; michael &nbsp;·&nbsp; sam &nbsp;·&nbsp; kyle &nbsp;·&nbsp; pablo &nbsp;·&nbsp; kristen &nbsp;·&nbsp; michaels
+    <strong>Clients:</strong> michael &nbsp;·&nbsp; sam &nbsp;·&nbsp; kyle &nbsp;·&nbsp; pablo &nbsp;·&nbsp; kristen &nbsp;·&nbsp; michaels &nbsp;·&nbsp; andrew &nbsp;·&nbsp; sasha
   </div>
   <label for="entry">Paste entry here</label>
-  <textarea id="entry" placeholder="michaels | Search Engine Journal | How AI is changing SEO | The biggest shift we are seeing..."></textarea>
+  <textarea id="entry" placeholder="andrew | BiggerPockets | Houston off-market deals | The deals most buyers never see..."></textarea>
   <button id="logBtn" onclick="logEntry()">Log to Spreadsheet</button>
   <div class="status" id="status"></div>
 </div>
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytNn6q1M-SMO0dKDRjnDX6lzG5lkm7DD5VO1PkbboUxzIVm0nM1MdT5k-YZaCb3xzozw/exec';
 const CLIENTS = {
-  kelly:   { name: 'Dr. Kelly Gonderman',  status: 'Waiting Approval' },
-  michael: { name: 'Michael G. Branson',   status: 'Submitted' },
-  sam:     { name: 'Sam Meenasian',        status: 'Submitted' },
-  kyle:    { name: 'Kyle Turner',          status: 'Submitted' },
-  pablo:   { name: 'Pablo Giordano',       status: 'Submitted' },
-  kristen: { name: 'Kristen Kuminski',     status: 'Waiting Approval' },
-  michaels: { name: 'Michael Salvaggio',   status: 'Submitted' }
+  michael:  { name: 'Michael G. Branson',   status: 'Submitted' },
+  sam:      { name: 'Sam Meenasian',        status: 'Submitted' },
+  kyle:     { name: 'Kyle Turner',          status: 'Submitted' },
+  pablo:    { name: 'Pablo Giordano',       status: 'Submitted' },
+  kristen:  { name: 'Kristen Kuminski',     status: 'Waiting Approval' },
+  michaels: { name: 'Michael Salvaggio',    status: 'Submitted' },
+  andrew:   { name: 'Andrew Gardner',       status: 'Submitted' },
+  sasha:    { name: 'Sasha Antoun',         status: 'Submitted' }
 };
 function getToday() {
   return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -66,7 +67,7 @@ async function logEntry() {
   const outlet = parts[1];
   const brief = parts[2];
   const comment = parts.slice(3).join('|').trim();
-  if (!CLIENTS[clientKey]) { showStatus('Unknown client. Valid: kelly, michael, sam, kyle, pablo, kristen, michaels', 'error'); return; }
+  if (!CLIENTS[clientKey]) { showStatus('Unknown client. Valid: michael, sam, kyle, pablo, kristen, michaels, andrew, sasha', 'error'); return; }
   const client = CLIENTS[clientKey];
   const btn = document.getElementById('logBtn');
   btn.disabled = true;
