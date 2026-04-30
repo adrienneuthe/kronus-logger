@@ -32,7 +32,7 @@
   <p class="subtitle">Paste the one-line entry from Claude, then hit Log.</p>
   <div class="info-box">
     <strong>Format:</strong> client | outlet | brief | comment<br>
-    <strong>Clients:</strong> michael &nbsp;·&nbsp; sam &nbsp;·&nbsp; kyle &nbsp;·&nbsp; pablo &nbsp;·&nbsp; kristen &nbsp;·&nbsp; michaels &nbsp;·&nbsp; andrew &nbsp;·&nbsp; sasha &nbsp;·&nbsp; rena &nbsp;·&nbsp; rena
+    <strong>Clients:</strong> michael &nbsp;&middot;&nbsp; sam &nbsp;&middot;&nbsp; kyle &nbsp;&middot;&nbsp; pablo &nbsp;&middot;&nbsp; kristen &nbsp;&middot;&nbsp; michaels &nbsp;&middot;&nbsp; andrew &nbsp;&middot;&nbsp; sasha &nbsp;&middot;&nbsp; rena
   </div>
   <label for="entry">Paste entry here</label>
   <textarea id="entry" placeholder="rena | Outlet | Brief | Comment..."></textarea>
@@ -49,7 +49,6 @@ const CLIENTS = {
   kristen:  { name: 'Kristen Kuminski',    sheetId: '10mq1lvv6G2_FHhK0kKh7vfjZ2BSZfp6GF_nI2eIEOxM', tab: 'Media Opportunities', extra: true,  status: 'Waiting Approval' },
   michaels: { name: 'Michael Salvaggio',   sheetId: '1g7VLPxgrR9aHA0DIoj18mO-aS8GCJj0KYWrgf31f4jM', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
   andrew:   { name: 'Andrew Gardner',      sheetId: '1f0D-sIey7lUE2e1xwIoSoNl6aXLYYUTRpiEcozjIIMQ', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
-  rena:     { name: 'Rena Awada',          sheetId: '1rCrouiTmwv6t-9O6VvkOiBj2KfQXpK1QfLyR_ZG_E6g', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
   sasha:    { name: 'Sasha Antoun',        sheetId: '1M9I8U67lcjncVbAJMMbMYWNlm7EmR5qPpbxLnvnLmeY', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
   rena:     { name: 'Rena Awada',          sheetId: '1rCrouiTmwv6t-9O6VvkOiBj2KfQXpK1QfLyR_ZG_E6g', tab: 'Media Opportunities', extra: false, status: 'Submitted' }
 };
@@ -69,7 +68,7 @@ async function logEntry() {
   const outlet = parts[1];
   const brief = parts[2];
   const comment = parts.slice(3).join('|').trim();
-  if (!CLIENTS[clientKey]) { showStatus('Unknown client. Valid: michael, sam, kyle, pablo, kristen, michaels, andrew, sasha, rena, rena', 'error'); return; }
+  if (!CLIENTS[clientKey]) { showStatus('Unknown client. Valid: michael, sam, kyle, pablo, kristen, michaels, andrew, sasha, rena', 'error'); return; }
   const client = CLIENTS[clientKey];
   const btn = document.getElementById('logBtn');
   btn.disabled = true;
@@ -78,7 +77,7 @@ async function logEntry() {
     const payload = { sheetId: client.sheetId, tab: client.tab, extra: client.extra, date: getToday(), outlet, brief, comment, status: client.status };
     const resp = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
     const data = await resp.json();
-    if (data.success) { showStatus('Logged to ' + client.name + ' — ' + outlet, 'success'); document.getElementById('entry').value = ''; }
+    if (data.success) { showStatus('Logged to ' + client.name + ' - ' + outlet, 'success'); document.getElementById('entry').value = ''; }
     else { showStatus('Error: ' + (data.error || 'Unknown error'), 'error'); }
   } catch (err) { showStatus('Failed: ' + err.message, 'error'); }
   btn.disabled = false;
