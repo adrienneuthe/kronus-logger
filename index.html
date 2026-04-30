@@ -32,26 +32,25 @@
   <p class="subtitle">Paste the one-line entry from Claude, then hit Log.</p>
   <div class="info-box">
     <strong>Format:</strong> client | outlet | brief | comment<br>
-    <strong>Clients:</strong> michael &nbsp;·&nbsp; sam &nbsp;·&nbsp; kyle &nbsp;·&nbsp; pablo &nbsp;·&nbsp; kristen &nbsp;·&nbsp; michaels &nbsp;·&nbsp; andrew &nbsp;·&nbsp; sasha
+    <strong>Clients:</strong> michael &nbsp;·&nbsp; sam &nbsp;·&nbsp; kyle &nbsp;·&nbsp; pablo &nbsp;·&nbsp; kristen &nbsp;·&nbsp; michaels &nbsp;·&nbsp; andrew &nbsp;·&nbsp; sasha &nbsp;·&nbsp; rena
   </div>
   <label for="entry">Paste entry here</label>
-  <textarea id="entry" placeholder="andrew | BiggerPockets | Houston off-market deals | The deals most buyers never see..."></textarea>
+  <textarea id="entry" placeholder="rena | Outlet | Brief | Comment..."></textarea>
   <button id="logBtn" onclick="logEntry()">Log to Spreadsheet</button>
   <div class="status" id="status"></div>
 </div>
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytNn6q1M-SMO0dKDRjnDX6lzG5lkm7DD5VO1PkbboUxzIVm0nM1MdT5k-YZaCb3xzozw/exec';
 const CLIENTS = {
-  michael:  { name: 'Michael G. Branson',  sheetId: '1jQ28MTnfbl8L6im577p5LSeMWx2NLsnL_EW1YXfPw_k', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
+  michael:  { name: 'Michael G. Branson',  sheetId: '1jQ28MTnfbl8L6im577p5LSeMWx2NLsnL_EW1YXfPw_k', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
   sam:      { name: 'Sam Meenasian',       sheetId: '1JfzibaNs0uLXfUOs9TZq5nN1K4lEyZCc7PQsX2_eVIo', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
-  kyle:     { name: 'Kyle Turner',         sheetId: '10RKP_dODJ98x4iWmgVJVwdyJ7-tMW8bYGSDPdNl1Q6w', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
-  pablo:    { name: 'Pablo Giordano',      sheetId: '1rECwTXxdUZ-lOsEodOeJxcHzAWVvntmeZl7AsSBjds8', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
-  kristen:  { name: 'Kristen Kuminski',    sheetId: '10mq1lvv6G2_FHhK0kKh7vfjZ2BSZfp6GF_nI2eIEOxM', tab: 'Media Opportunities',  extra: true,  status: 'Waiting Approval' },
-  michaels: { name: 'Michael Salvaggio',   sheetId: '1g7VLPxgrR9aHA0DIoj18mO-aS8GCJj0KYWrgf31f4jM', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
-  andrew:   { name: 'Andrew Gardner',      sheetId: '1f0D-sIey7lUE2e1xwIoSoNl6aXLYYUTRpiEcozjIIMQ', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
-  rena:     { name: 'Rena Awada',        sheetId: '1rCrouiTmwv6t-9O6VvkOiBj2KfQXpK1QfLyR_ZG_E6g', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
-  rena:     { name: 'Rena Awada',        sheetId: '1rCrouiTmwv6t-9O6VvkOiBj2KfQXpK1QfLyR_ZG_E6g', tab: 'Media Opportunities',  extra: false, status: 'Submitted' },
-  sasha:    { name: 'Sasha Antoun',        sheetId: '1M9I8U67lcjncVbAJMMbMYWNlm7EmR5qPpbxLnvnLmeY', tab: 'Media Opportunities',  extra: false, status: 'Submitted' }
+  kyle:     { name: 'Kyle Turner',         sheetId: '10RKP_dODJ98x4iWmgVJVwdyJ7-tMW8bYGSDPdNl1Q6w', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
+  pablo:    { name: 'Pablo Giordano',      sheetId: '1rECwTXxdUZ-lOsEodOeJxcHzAWVvntmeZl7AsSBjds8', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
+  kristen:  { name: 'Kristen Kuminski',    sheetId: '10mq1lvv6G2_FHhK0kKh7vfjZ2BSZfp6GF_nI2eIEOxM', tab: 'Media Opportunities', extra: true,  status: 'Waiting Approval' },
+  michaels: { name: 'Michael Salvaggio',   sheetId: '1g7VLPxgrR9aHA0DIoj18mO-aS8GCJj0KYWrgf31f4jM', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
+  andrew:   { name: 'Andrew Gardner',      sheetId: '1f0D-sIey7lUE2e1xwIoSoNl6aXLYYUTRpiEcozjIIMQ', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
+  sasha:    { name: 'Sasha Antoun',        sheetId: '1M9I8U67lcjncVbAJMMbMYWNlm7EmR5qPpbxLnvnLmeY', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
+  rena:     { name: 'Rena Awada',          sheetId: '1rCrouiTmwv6t-9O6VvkOiBj2KfQXpK1QfLyR_ZG_E6g', tab: 'Media Opportunities', extra: false, status: 'Submitted' }
 };
 function getToday() {
   return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -69,7 +68,7 @@ async function logEntry() {
   const outlet = parts[1];
   const brief = parts[2];
   const comment = parts.slice(3).join('|').trim();
-  if (!CLIENTS[clientKey]) { showStatus('Unknown client. Valid: michael, sam, kyle, pablo, kristen, michaels, andrew, sasha', 'error'); return; }
+  if (!CLIENTS[clientKey]) { showStatus('Unknown client. Valid: michael, sam, kyle, pablo, kristen, michaels, andrew, sasha, rena', 'error'); return; }
   const client = CLIENTS[clientKey];
   const btn = document.getElementById('logBtn');
   btn.disabled = true;
