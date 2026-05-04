@@ -1,87 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kronus Spreadsheet Logger</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-  .card { background: white; border-radius: 12px; padding: 32px; width: 100%; max-width: 680px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-  .brand { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #999; text-transform: uppercase; margin-bottom: 6px; }
-  h1 { font-size: 24px; font-weight: 700; color: #111; margin-bottom: 4px; }
-  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
-  .info-box { background: #f8f8f8; border-radius: 8px; padding: 14px 16px; margin-bottom: 24px; font-family: monospace; font-size: 12px; color: #555; line-height: 1.7; }
-  .info-box strong { color: #333; }
-  label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
-  textarea { width: 100%; border: 1.5px solid #e0e0e0; border-radius: 8px; padding: 12px 14px; font-family: monospace; font-size: 13px; line-height: 1.5; resize: vertical; min-height: 130px; color: #222; transition: border-color 0.2s; }
-  textarea:focus { outline: none; border-color: #111; }
-  button { width: 100%; background: #111; color: white; border: none; border-radius: 8px; padding: 15px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 16px; transition: background 0.2s; }
-  button:hover { background: #333; }
-  button:disabled { background: #999; cursor: not-allowed; }
-  .status { margin-top: 12px; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; display: none; }
-  .status.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; display: block; }
-  .status.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; display: block; }
-  .status.loading { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; display: block; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kronus Communications — Spreadsheet Logger</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; background: #f9f9f9; color: #222; }
+    h1 { font-size: 1.4em; margin-bottom: 0; }
+    h2 { font-size: 1em; font-weight: normal; color: #555; margin-top: 4px; }
+    .clients { font-size: 0.85em; color: #777; margin-bottom: 20px; }
+    textarea { width: 100%; height: 80px; padding: 10px; font-size: 1em; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; resize: vertical; }
+    button { margin-top: 10px; padding: 10px 24px; font-size: 1em; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #1558b0; }
+    #status { margin-top: 16px; font-size: 0.95em; min-height: 1.4em; }
+    .error { color: #c0392b; }
+    .success { color: #27ae60; }
+    .hint { font-size: 0.8em; color: #999; margin-top: 6px; }
+  </style>
 </head>
 <body>
-<div class="card">
-  <div class="brand">Kronus Communications</div>
-  <h1>Spreadsheet Logger</h1>
-  <p class="subtitle">Paste the one-line entry from Claude, then hit Log.</p>
-  <div class="info-box">
-    <strong>Format:</strong> client | outlet | brief | comment<br>
-    <strong>Clients:</strong> michael &nbsp;&middot;&nbsp; sam &nbsp;&middot;&nbsp; kyle &nbsp;&middot;&nbsp; pablo &nbsp;&middot;&nbsp; kristen &nbsp;&middot;&nbsp; michaels &nbsp;&middot;&nbsp; andrew &nbsp;&middot;&nbsp; sasha &nbsp;&middot;&nbsp; rena
-  </div>
-  <label for="entry">Paste entry here</label>
-  <textarea id="entry" placeholder="rena | Outlet | Brief | Comment..."></textarea>
-  <button id="logBtn" onclick="logEntry()">Log to Spreadsheet</button>
-  <div class="status" id="status"></div>
-</div>
-<script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytNn6q1M-SMO0dKDRjnDX6lzG5lkm7DD5VO1PkbboUxzIVm0nM1MdT5k-YZaCb3xzozw/exec';
-const CLIENTS = {
-  michael:  { name: 'Michael G. Branson',  sheetId: '1jQ28MTnfbl8L6im577p5LSeMWx2NLsnL_EW1YXfPw_k', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
-  sam:      { name: 'Sam Meenasian',       sheetId: '1JfzibaNs0uLXfUOs9TZq5nN1K4lEyZCc7PQsX2_eVIo', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
-  kyle:     { name: 'Kyle Turner',         sheetId: '10RKP_dODJ98x4iWmgVJVwdyJ7-tMW8bYGSDPdNl1Q6w', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
-  pablo:    { name: 'Pablo Giordano',      sheetId: '1rECwTXxdUZ-lOsEodOeJxcHzAWVvntmeZl7AsSBjds8', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
-  kristen:  { name: 'Kristen Kuminski',    sheetId: '10mq1lvv6G2_FHhK0kKh7vfjZ2BSZfp6GF_nI2eIEOxM', tab: 'Media Opportunities', extra: true,  status: 'Waiting Approval' },
-  michaels: { name: 'Michael Salvaggio',   sheetId: '1g7VLPxgrR9aHA0DIoj18mO-aS8GCJj0KYWrgf31f4jM', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
-  andrew:   { name: 'Andrew Gardner',      sheetId: '1f0D-sIey7lUE2e1xwIoSoNl6aXLYYUTRpiEcozjIIMQ', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
-  sasha:    { name: 'Sasha Antoun',        sheetId: '1M9I8U67lcjncVbAJMMbMYWNlm7EmR5qPpbxLnvnLmeY', tab: 'Media Opportunities', extra: false, status: 'Submitted' },
-  rena:     { name: 'Rena Awada',          sheetId: '1rCrouiTmwv6t-9O6VvkOiBj2KfQXpK1QfLyR_ZG_E6g', tab: 'Media Opportunities', extra: false, status: 'Submitted' }
-};
-function getToday() {
-  return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-function showStatus(msg, type) {
-  const el = document.getElementById('status');
-  el.textContent = msg;
-  el.className = 'status ' + type;
-}
-async function logEntry() {
-  const raw = document.getElementById('entry').value.trim();
-  const parts = raw.split('|').map(s => s.trim());
-  if (parts.length < 4) { showStatus('Invalid format. Use: client | outlet | brief | comment', 'error'); return; }
-  const clientKey = parts[0].toLowerCase();
-  const outlet = parts[1];
-  const brief = parts[2];
-  const comment = parts.slice(3).join('|').trim();
-  if (!CLIENTS[clientKey]) { showStatus('Unknown client. Valid: michael, sam, kyle, pablo, kristen, michaels, andrew, sasha, rena', 'error'); return; }
-  const client = CLIENTS[clientKey];
-  const btn = document.getElementById('logBtn');
-  btn.disabled = true;
-  showStatus('Logging to ' + client.name + '...', 'loading');
-  try {
-    const payload = { sheetId: client.sheetId, tab: client.tab, extra: client.extra, date: getToday(), outlet, brief, comment, status: client.status };
-    const resp = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-    const data = await resp.json();
-    if (data.success) { showStatus('Logged to ' + client.name + ' - ' + outlet, 'success'); document.getElementById('entry').value = ''; }
-    else { showStatus('Error: ' + (data.error || 'Unknown error'), 'error'); }
-  } catch (err) { showStatus('Failed: ' + err.message, 'error'); }
-  btn.disabled = false;
-}
-</script>
+  <h1>Kronus Communications</h1>
+  <h2>Spreadsheet Logger</h2>
+  <p class="clients">Paste the one-line entry from Claude, then hit Log.<br>
+  <strong>Format:</strong> client | outlet | brief | comment &nbsp;&nbsp;
+  <strong>Clients:</strong> kelly &nbsp;·&nbsp; michael &nbsp;·&nbsp; sam &nbsp;·&nbsp; kyle &nbsp;·&nbsp; pablo &nbsp;·&nbsp; kristen &nbsp;·&nbsp; michaels &nbsp;·&nbsp; andrew &nbsp;·&nbsp; sasha &nbsp;·&nbsp; rena</p>
+
+  <textarea id="entry" placeholder="Paste entry here"></textarea>
+  <br>
+  <button onclick="logEntry()">Log to Spreadsheet</button>
+  <p class="hint">Tip: You can paste multiple entries at once, one per line.</p>
+  <div id="status"></div>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytNn6q1M-SMO0dKDRjnDX6lzG5lkm7DD5VO1PkbboUxzIVm0nM1MdT5k-YZaCb3xzozw/exec";
+
+    const clients = {
+      michael:  { name: "Michael G. Branson",  sheetId: "1jQ28MTnfbl8L6im577p5LSeMWx2NLsnL_EW1YXfPw_k", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+      sam:      { name: "Sam Meenasian",        sheetId: "1JfzibaNs0uLXfUOs9TZq5nN1K4lEyZCc7PQsX2_eVIo", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+      kyle:     { name: "Kyle Turner",          sheetId: "10RKP_dODJ98x4iWmgVJVwdyJ7-tMW8bYGSDPdNl1Q6w", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+      pablo:    { name: "Pablo Giordano",       sheetId: "1rECwTXxdUZ-lOsEodOeJxcHzAWVvntmeZl7AsSBjds8", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+      kristen:  { name: "Kristen Kuminski",     sheetId: "10mq1lvv6G2_FHhK0kKh7vfjZ2BSZfp6GF_nI2eIEOxM", tab: "Media Opportunities", extraCol: true,  defaultStatus: "Waiting Approval" },
+      michaels: { name: "Michael Salvaggio",    sheetId: "1g7VLPxgrR9aHA0DIoj18mO-aS8GCJj0KYWrgf31f4jM", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+      andrew:   { name: "Andrew Gardner",       sheetId: "1f0D-sIey7lUE2e1xwIoSoNl6aXLYYUTRpiEcozjIIMQ", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+      sasha:    { name: "Sasha Antoun",         sheetId: "1M9I8U67lcjncVbAJMMbMYWNlm7EmR5qPpbxLnvnLmeY", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+      rena:     { name: "Rena Awada",           sheetId: "1rCrouiTmwv6t-9O6VvkOiBj2KfQXpK1QfLyR_ZG_E6g", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+      kelly:    { name: "Kelly",                sheetId: "",                                              tab: "Media Opportunities", extraCol: false, defaultStatus: "Waiting Approval" }
+    };
+
+    async function logEntry() {
+      const raw = document.getElementById("entry").value.trim();
+      const statusEl = document.getElementById("status");
+      if (!raw) { statusEl.innerHTML = '<span class="error">Nothing to log.</span>'; return; }
+
+      const lines = raw.split("\n").map(l => l.trim()).filter(Boolean);
+      let results = [];
+
+      for (const line of lines) {
+        const parts = line.split("|").map(p => p.trim());
+        if (parts.length < 4) { results.push('<span class="error">Bad format: ' + line + '</span>'); continue; }
+
+        const [code, outlet, brief, ...commentParts] = parts;
+        const comment = commentParts.join(" | ");
+        const client = clients[code.toLowerCase()];
+
+        if (!client) {
+          const valid = Object.keys(clients).join(", ");
+          results.push('<span class="error">Unknown client "' + code + '". Valid: ' + valid + '</span>');
+          continue;
+        }
+
+        const payload = {
+          sheetId: client.sheetId,
+          tab: client.tab,
+          outlet,
+          brief,
+          comment,
+          extraCol: client.extraCol,
+          status: client.defaultStatus
+        };
+
+        try {
+          statusEl.innerHTML = 'Logging ' + client.name + '…';
+          const resp = await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(payload)
+          });
+          const text = await resp.text();
+          results.push('<span class="success">✓ Logged for ' + client.name + '</span>');
+        } catch (e) {
+          results.push('<span class="error">Error logging for ' + client.name + ': ' + e.message + '</span>');
+        }
+      }
+
+      statusEl.innerHTML = results.join("<br>");
+      if (results.every(r => r.includes("success"))) {
+        document.getElementById("entry").value = "";
+      }
+    }
+  </script>
 </body>
 </html>
