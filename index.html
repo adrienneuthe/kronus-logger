@@ -7,101 +7,61 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f8; color: #1a1a2e; min-height: 100vh; }
-    header { background: #1a1a2e; color: white; padding: 18px 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-    header h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: 0.5px; }
+    header { background: #1a1a2e; color: white; padding: 18px 28px; }
+    header h1 { font-size: 1.2rem; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 6px; }
     header .clients-line { font-size: 0.78rem; color: #a0aec0; }
     header .clients-line span { color: #63b3ed; cursor: pointer; margin: 0 3px; }
     header .clients-line span:hover { text-decoration: underline; }
-    .container { max-width: 820px; margin: 32px auto; padding: 0 16px; }
+    .container { max-width: 700px; margin: 36px auto; padding: 0 16px; }
     .form-card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 28px; }
-    h2 { font-size: 1rem; font-weight: 600; margin-bottom: 18px; color: #2d3748; }
-    label { display: block; font-size: 0.78rem; font-weight: 600; color: #4a5568; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
-    select, input, textarea { width: 100%; padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 7px; font-size: 0.9rem; color: #1a1a2e; background: #f7fafc; transition: border 0.2s; margin-bottom: 14px; }
-    select:focus, input:focus, textarea:focus { outline: none; border-color: #63b3ed; background: white; }
-    textarea { resize: vertical; min-height: 90px; font-family: inherit; }
-    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .btn { background: #1a1a2e; color: white; border: none; padding: 11px 24px; border-radius: 7px; font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    h2 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; color: #2d3748; }
+    .hint { font-size: 0.78rem; color: #718096; margin-bottom: 16px; font-family: monospace; background: #f7fafc; padding: 7px 10px; border-radius: 6px; border-left: 3px solid #63b3ed; }
+    textarea { width: 100%; padding: 11px 13px; border: 1.5px solid #e2e8f0; border-radius: 7px; font-size: 0.92rem; color: #1a1a2e; background: #f7fafc; font-family: inherit; resize: vertical; min-height: 80px; margin-bottom: 14px; transition: border 0.2s; }
+    textarea:focus { outline: none; border-color: #63b3ed; background: white; }
+    .btn { background: #1a1a2e; color: white; border: none; padding: 12px 28px; border-radius: 7px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
     .btn:hover { background: #2d3a5a; }
     .btn:disabled { background: #a0aec0; cursor: not-allowed; }
-    .status-msg { margin-top: 14px; font-size: 0.88rem; padding: 10px 14px; border-radius: 7px; display: none; }
+    .status-msg { margin-top: 13px; font-size: 0.88rem; padding: 10px 14px; border-radius: 7px; display: none; }
     .status-msg.success { background: #c6f6d5; color: #22543d; display: block; }
     .status-msg.error { background: #fed7d7; color: #742a2a; display: block; }
     .status-msg.loading { background: #ebf8ff; color: #2b6cb0; display: block; }
-    .log-section { margin-top: 32px; }
-    .log-section h2 { margin-bottom: 14px; }
-    .log-entry { background: white; border-radius: 9px; box-shadow: 0 1px 6px rgba(0,0,0,0.06); padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 14px; }
-    .log-entry .meta { flex: 0 0 auto; text-align: right; min-width: 90px; }
-    .log-entry .meta .time { font-size: 0.75rem; color: #718096; }
-    .log-entry .meta .client-badge { font-size: 0.7rem; font-weight: 700; background: #ebf8ff; color: #2b6cb0; border-radius: 5px; padding: 2px 7px; display: inline-block; margin-top: 4px; text-transform: uppercase; }
+    .log-section { margin-top: 28px; }
+    .log-section h2 { margin-bottom: 12px; }
+    .log-entry { background: white; border-radius: 9px; box-shadow: 0 1px 6px rgba(0,0,0,0.06); padding: 13px 16px; margin-bottom: 9px; display: flex; align-items: flex-start; gap: 12px; }
+    .log-entry .meta { flex: 0 0 auto; text-align: right; min-width: 80px; }
+    .log-entry .meta .time { font-size: 0.73rem; color: #718096; }
+    .log-entry .meta .client-badge { font-size: 0.68rem; font-weight: 700; background: #ebf8ff; color: #2b6cb0; border-radius: 5px; padding: 2px 7px; display: inline-block; margin-top: 4px; text-transform: uppercase; }
     .log-entry .body { flex: 1; }
-    .log-entry .body .outlet { font-weight: 700; font-size: 0.92rem; color: #1a1a2e; }
-    .log-entry .body .brief { font-size: 0.8rem; color: #718096; margin: 2px 0 5px; }
-    .log-entry .body .comment { font-size: 0.85rem; color: #2d3748; line-height: 1.5; }
-    .log-entry .status-badge { flex: 0 0 auto; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; align-self: flex-start; margin-top: 2px; white-space: nowrap; }
+    .log-entry .body .outlet { font-weight: 700; font-size: 0.9rem; color: #1a1a2e; }
+    .log-entry .body .brief { font-size: 0.78rem; color: #718096; margin: 2px 0 4px; }
+    .log-entry .body .comment { font-size: 0.84rem; color: #2d3748; line-height: 1.5; }
+    .log-entry .status-badge { flex: 0 0 auto; font-size: 0.7rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; align-self: flex-start; white-space: nowrap; }
     .badge-submitted { background: #c6f6d5; color: #22543d; }
     .badge-waiting { background: #fefcbf; color: #744210; }
-    .badge-error { background: #fed7d7; color: #742a2a; }
-    footer { text-align: center; color: #a0aec0; font-size: 0.75rem; padding: 28px 0 18px; }
+    footer { text-align: center; color: #a0aec0; font-size: 0.75rem; padding: 24px 0 16px; }
   </style>
 </head>
 <body>
 <header>
-  <h1>Kronus Communications &mdash; Spreadsheet Logger</h1>
+  <h1>Kronus Communications — Spreadsheet Logger</h1>
   <div class="clients-line">
     Clients:
-    <span onclick="setClient('michael')">Michael G. Branson</span> &middot;
-    <span onclick="setClient('pablo')">Pablo Giordano</span> &middot;
-    <span onclick="setClient('kristen')">Kristen Kuminski</span> &middot;
-    <span onclick="setClient('michaels')">Michael Salvaggio</span> &middot;
-    <span onclick="setClient('andrew')">Andrew Gardner</span> &middot;
-    <span onclick="setClient('sasha')">Sasha Antoun</span> &middot;
-    <span onclick="setClient('rena')">Rena Awada</span> &middot;
-    <span onclick="setClient('clint')">Dr. Clint Salo</span>
+    <span onclick="prefill('michael')">Michael G. Branson</span> &middot;
+    <span onclick="prefill('pablo')">Pablo Giordano</span> &middot;
+    <span onclick="prefill('kristen')">Kristen Kuminski</span> &middot;
+    <span onclick="prefill('michaels')">Michael Salvaggio</span> &middot;
+    <span onclick="prefill('andrew')">Andrew Gardner</span> &middot;
+    <span onclick="prefill('sasha')">Sasha Antoun</span> &middot;
+    <span onclick="prefill('rena')">Rena Awada</span> &middot;
+    <span onclick="prefill('clint')">Dr. Clint Salo</span>
   </div>
 </header>
 
 <div class="container">
   <div class="form-card">
     <h2>Log a Media Entry</h2>
-    <label for="clientSelect">Client</label>
-    <select id="clientSelect" onchange="onClientChange()">
-      <option value="">— Select a client —</option>
-      <option value="michael">Michael G. Branson</option>
-      <option value="pablo">Pablo Giordano</option>
-      <option value="kristen">Kristen Kuminski</option>
-      <option value="michaels">Michael Salvaggio</option>
-      <option value="andrew">Andrew Gardner</option>
-      <option value="sasha">Sasha Antoun</option>
-      <option value="rena">Rena Awada</option>
-      <option value="clint">Dr. Clint Salo</option>
-    </select>
-
-    <label for="outletInput">Outlet Name</label>
-    <input type="text" id="outletInput" placeholder="e.g. Forbes, NPR, ABC News" />
-
-    <label for="briefInput">Brief (10 words max)</label>
-    <input type="text" id="briefInput" placeholder="e.g. Request for expert comment on AI trends" />
-
-    <label for="commentInput">Full Comment / Pitch Text</label>
-    <textarea id="commentInput" placeholder="Paste the full proposed comment or pitch here..."></textarea>
-
-    <div class="row2">
-      <div>
-        <label for="statusSelect">Submission Status</label>
-        <select id="statusSelect">
-          <option value="Submitted">Submitted</option>
-          <option value="Waiting Approval">Waiting Approval</option>
-        </select>
-      </div>
-      <div>
-        <label for="approvedSelect" id="approvedLabel" style="display:none;">Approved As Is</label>
-        <select id="approvedSelect" style="display:none;">
-          <option value="No">No</option>
-          <option value="Yes">Yes</option>
-        </select>
-      </div>
-    </div>
-
+    <div class="hint">clientcode | Outlet Name | Brief (10 words max) | Full comment text</div>
+    <textarea id="entryInput" placeholder="e.g. michael | Forbes | Expert comment on inflation trends | The current economic environment..."></textarea>
     <button class="btn" id="submitBtn" onclick="submitEntry()">Log Entry</button>
     <div class="status-msg" id="statusMsg"></div>
   </div>
@@ -112,7 +72,7 @@
   </div>
 </div>
 
-<footer>Kronus Communications &copy; 2025 &mdash; Internal Use Only</footer>
+<footer>Kronus Communications &copy; 2025 — Internal Use Only</footer>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytNn6q1M-SMO0dKDRjnDX6lzG5lkm7DD5VO1PkbboUxzIVm0nM1MdT5k-YZaCb3xzozw/exec";
@@ -130,25 +90,12 @@
 
   const sessionLog = [];
 
-  function setClient(code) {
-    document.getElementById("clientSelect").value = code;
-    onClientChange();
-  }
-
-  function onClientChange() {
-    const code = document.getElementById("clientSelect").value;
-    if (!code) return;
-    const c = CLIENTS[code];
-    document.getElementById("statusSelect").value = c.defaultStatus;
-    const approvedLabel = document.getElementById("approvedLabel");
-    const approvedSelect = document.getElementById("approvedSelect");
-    if (c.extraCol) {
-      approvedLabel.style.display = "block";
-      approvedSelect.style.display = "block";
-    } else {
-      approvedLabel.style.display = "none";
-      approvedSelect.style.display = "none";
+  function prefill(code) {
+    const box = document.getElementById("entryInput");
+    if (!box.value.trim()) {
+      box.value = code + " | ";
     }
+    box.focus();
   }
 
   function showMsg(text, type) {
@@ -158,18 +105,17 @@
   }
 
   async function submitEntry() {
-    const code = document.getElementById("clientSelect").value;
-    const outlet = document.getElementById("outletInput").value.trim();
-    const brief = document.getElementById("briefInput").value.trim();
-    const comment = document.getElementById("commentInput").value.trim();
-    const status = document.getElementById("statusSelect").value;
-    const approved = document.getElementById("approvedSelect").value;
+    const raw = document.getElementById("entryInput").value.trim();
+    if (!raw) { showMsg("Please paste a log entry.", "error"); return; }
 
-    if (!code) { showMsg("Please select a client.", "error"); return; }
-    if (!outlet) { showMsg("Please enter an outlet name.", "error"); return; }
-    if (!comment) { showMsg("Please enter the comment/pitch text.", "error"); return; }
+    const parts = raw.split("|").map(s => s.trim());
+    if (parts.length < 4) { showMsg("Format: clientcode | Outlet | Brief | Full comment", "error"); return; }
 
-    const client = CLIENTS[code];
+    const [code, outlet, brief, ...rest] = parts;
+    const comment = rest.join("|").trim();
+    const client = CLIENTS[code.toLowerCase()];
+    if (!client) { showMsg("Unknown client code: " + code, "error"); return; }
+
     const btn = document.getElementById("submitBtn");
     btn.disabled = true;
     showMsg("Submitting to Google Sheets...", "loading");
@@ -180,9 +126,9 @@
       outlet,
       brief,
       comment,
-      status,
+      status: client.defaultStatus,
       extraCol: client.extraCol,
-      approved: client.extraCol ? approved : null,
+      approved: client.extraCol ? "No" : null,
     };
 
     try {
@@ -192,24 +138,17 @@
       });
       const json = await res.json();
       if (json.result === "success") {
-        showMsg("✓ Logged successfully to " + client.name + "'s sheet!", "success");
-        addToSessionLog(code, client.name, outlet, brief, comment, status);
-        document.getElementById("outletInput").value = "";
-        document.getElementById("briefInput").value = "";
-        document.getElementById("commentInput").value = "";
+        showMsg("✓ Logged to " + client.name + "'s sheet!", "success");
+        sessionLog.unshift({ code: code.toLowerCase(), name: client.name, outlet, brief, comment, status: client.defaultStatus, time: new Date() });
+        renderLog();
+        document.getElementById("entryInput").value = "";
       } else {
-        showMsg("Error: " + (json.error || "Unknown error from Apps Script."), "error");
+        showMsg("Error: " + (json.error || "Unknown error."), "error");
       }
     } catch (e) {
       showMsg("Network error: " + e.message, "error");
     }
     btn.disabled = false;
-  }
-
-  function addToSessionLog(code, name, outlet, brief, comment, status) {
-    const entry = { code, name, outlet, brief, comment, status, time: new Date() };
-    sessionLog.unshift(entry);
-    renderLog();
   }
 
   function renderLog() {
