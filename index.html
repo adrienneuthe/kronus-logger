@@ -50,8 +50,6 @@
   <div class="clients-line">
     Clients:
     <span onclick="setClient('michael')">Michael G. Branson</span> &middot;
-    <span onclick="setClient('sam')">Sam Meenasian</span> &middot;
-    <span onclick="setClient('kyle')">Kyle Turner</span> &middot;
     <span onclick="setClient('pablo')">Pablo Giordano</span> &middot;
     <span onclick="setClient('kristen')">Kristen Kuminski</span> &middot;
     <span onclick="setClient('michaels')">Michael Salvaggio</span> &middot;
@@ -69,8 +67,6 @@
     <select id="clientSelect" onchange="onClientChange()">
       <option value="">— Select a client —</option>
       <option value="michael">Michael G. Branson</option>
-      <option value="sam">Sam Meenasian</option>
-      <option value="kyle">Kyle Turner</option>
       <option value="pablo">Pablo Giordano</option>
       <option value="kristen">Kristen Kuminski</option>
       <option value="michaels">Michael Salvaggio</option>
@@ -123,11 +119,9 @@
 
   const CLIENTS = {
     michael:  { name: "Michael G. Branson",  sheetId: "1jQ28MTnfbl8L6im577p5LSeMWx2NLsnL_EW1YXfPw_k", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
-    sam:      { name: "Sam Meenasian",        sheetId: "1JfzibaNs0uLXfUOs9TZq5nN1K4lEyZCc7PQsX2_eVIo", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
-    kyle:     { name: "Kyle Turner",          sheetId: "10RKP_dODJ98x4iWmgVJVwdyJ7-tMW8bYGSDPdNl1Q6w", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
     pablo:    { name: "Pablo Giordano",       sheetId: "1rECwTXxdUZ-lOsEodOeJxcHzAWVvntmeZl7AsSBjds8", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
     kristen:  { name: "Kristen Kuminski",     sheetId: "10mq1lvv6G2_FHhK0kKh7vfjZ2BSZfp6GF_nI2eIEOxM", tab: "Media Opportunities", extraCol: true,  defaultStatus: "Waiting Approval" },
-    michaels: { name: "Michael Salvaggio",   sheetId: "1g7VLPxgrR9aHA0DIoj18mO-aS8GCJj0KYWrgf31f4jM", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+    michaels: { name: "Michael Salvaggio",    sheetId: "1g7VLPxgrR9aHA0DIoj18mO-aS8GCJj0KYWrgf31f4jM", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
     andrew:   { name: "Andrew Gardner",       sheetId: "1f0D-sIey7lUE2e1xwIoSoNl6aXLYYUTRpiEcozjIIMQ", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
     sasha:    { name: "Sasha Antoun",         sheetId: "1M9I8U67lcjncVbAJMMbMYWNlm7EmR5qPpbxLnvnLmeY", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
     rena:     { name: "Rena Awada",           sheetId: "1rCrouiTmwv6t-9O6VvkOiBj2KfQXpK1QfLyR_ZG_E6g", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
