@@ -92,10 +92,16 @@
 
   function prefill(code) {
     const box = document.getElementById("entryInput");
-    if (!box.value.trim()) {
-      box.value = code + " | ";
-    }
+    if (!box.value.trim()) box.value = code + " | ";
     box.focus();
+  }
+
+  function todayDate() {
+    const d = new Date();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    return mm + "/" + dd + "/" + yyyy;
   }
 
   function showMsg(text, type) {
@@ -123,6 +129,7 @@
     const payload = {
       sheetId: client.sheetId,
       tab: client.tab,
+      date: todayDate(),
       outlet,
       brief,
       comment,
