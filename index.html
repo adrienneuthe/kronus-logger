@@ -65,11 +65,7 @@
     <button class="btn" id="submitBtn" onclick="submitEntry()">Log Entry</button>
     <div class="status-msg" id="statusMsg"></div>
   </div>
-
-  <div class="log-section">
-    <h2>Recent Entries (This Session)</h2>
-    <div id="logList"><p style="color:#a0aec0;font-size:0.85rem;">No entries yet this session.</p></div>
-  </div>
+</div>
 </div>
 
 <footer>Kronus Communications &copy; 2025 — Internal Use Only</footer>
@@ -88,7 +84,6 @@
     clint:    { name: "Dr. Clint Salo",       sheetId: "1pcaTNBwtqsQy8qN0UMvKmIZUsa4lkQ3NZujSFhw44TU", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
   };
 
-  const sessionLog = [];
 
   function prefill(code) {
     const box = document.getElementById("entryInput");
@@ -147,8 +142,6 @@
       try { json = await res.json(); } catch(e) {}
       if (res.ok && json.result !== "error") {
         showMsg("✓ Logged to " + client.name + "'s sheet!", "success");
-        sessionLog.unshift({ code: code.toLowerCase(), name: client.name, outlet, brief, comment, status: client.defaultStatus, time: new Date() });
-        renderLog();
         document.getElementById("entryInput").value = "";
       } else {
         showMsg("Error: " + (json.error || "Unknown error."), "error");
@@ -157,30 +150,6 @@
       showMsg("Network error: " + e.message, "error");
     }
     btn.disabled = false;
-  }
-
-  function renderLog() {
-    const container = document.getElementById("logList");
-    if (sessionLog.length === 0) {
-      container.innerHTML = '<p style="color:#a0aec0;font-size:0.85rem;">No entries yet this session.</p>';
-      return;
-    }
-    container.innerHTML = sessionLog.map(e => {
-      const badgeClass = e.status === "Submitted" ? "badge-submitted" : "badge-waiting";
-      const timeStr = e.time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      return `<div class="log-entry">
-        <div class="meta">
-          <div class="time">${timeStr}</div>
-          <div class="client-badge">${e.code}</div>
-        </div>
-        <div class="body">
-          <div class="outlet">${e.outlet}</div>
-          ${e.brief ? `<div class="brief">${e.brief}</div>` : ""}
-          <div class="comment">${e.comment}</div>
-        </div>
-        <div class="status-badge ${badgeClass}">${e.status}</div>
-      </div>`;
-    }).join("");
   }
 </script>
 </body>
