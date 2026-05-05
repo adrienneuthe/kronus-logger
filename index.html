@@ -5,98 +5,242 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kronus Communications — Spreadsheet Logger</title>
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; background: #f9f9f9; color: #222; }
-    h1 { font-size: 1.4em; margin-bottom: 0; }
-    h2 { font-size: 1em; font-weight: normal; color: #555; margin-top: 4px; }
-    .clients { font-size: 0.85em; color: #777; margin-bottom: 20px; }
-    textarea { width: 100%; height: 80px; padding: 10px; font-size: 1em; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; resize: vertical; }
-    button { margin-top: 10px; padding: 10px 24px; font-size: 1em; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; }
-    button:hover { background: #1558b0; }
-    #status { margin-top: 16px; font-size: 0.95em; min-height: 1.4em; }
-    .error { color: #c0392b; }
-    .success { color: #27ae60; }
-    .hint { font-size: 0.8em; color: #999; margin-top: 6px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f8; color: #1a1a2e; min-height: 100vh; }
+    header { background: #1a1a2e; color: white; padding: 18px 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    header h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: 0.5px; }
+    header .clients-line { font-size: 0.78rem; color: #a0aec0; }
+    header .clients-line span { color: #63b3ed; cursor: pointer; margin: 0 3px; }
+    header .clients-line span:hover { text-decoration: underline; }
+    .container { max-width: 820px; margin: 32px auto; padding: 0 16px; }
+    .form-card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 28px; }
+    h2 { font-size: 1rem; font-weight: 600; margin-bottom: 18px; color: #2d3748; }
+    label { display: block; font-size: 0.78rem; font-weight: 600; color: #4a5568; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    select, input, textarea { width: 100%; padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 7px; font-size: 0.9rem; color: #1a1a2e; background: #f7fafc; transition: border 0.2s; margin-bottom: 14px; }
+    select:focus, input:focus, textarea:focus { outline: none; border-color: #63b3ed; background: white; }
+    textarea { resize: vertical; min-height: 90px; font-family: inherit; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .btn { background: #1a1a2e; color: white; border: none; padding: 11px 24px; border-radius: 7px; font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #2d3a5a; }
+    .btn:disabled { background: #a0aec0; cursor: not-allowed; }
+    .status-msg { margin-top: 14px; font-size: 0.88rem; padding: 10px 14px; border-radius: 7px; display: none; }
+    .status-msg.success { background: #c6f6d5; color: #22543d; display: block; }
+    .status-msg.error { background: #fed7d7; color: #742a2a; display: block; }
+    .status-msg.loading { background: #ebf8ff; color: #2b6cb0; display: block; }
+    .log-section { margin-top: 32px; }
+    .log-section h2 { margin-bottom: 14px; }
+    .log-entry { background: white; border-radius: 9px; box-shadow: 0 1px 6px rgba(0,0,0,0.06); padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 14px; }
+    .log-entry .meta { flex: 0 0 auto; text-align: right; min-width: 90px; }
+    .log-entry .meta .time { font-size: 0.75rem; color: #718096; }
+    .log-entry .meta .client-badge { font-size: 0.7rem; font-weight: 700; background: #ebf8ff; color: #2b6cb0; border-radius: 5px; padding: 2px 7px; display: inline-block; margin-top: 4px; text-transform: uppercase; }
+    .log-entry .body { flex: 1; }
+    .log-entry .body .outlet { font-weight: 700; font-size: 0.92rem; color: #1a1a2e; }
+    .log-entry .body .brief { font-size: 0.8rem; color: #718096; margin: 2px 0 5px; }
+    .log-entry .body .comment { font-size: 0.85rem; color: #2d3748; line-height: 1.5; }
+    .log-entry .status-badge { flex: 0 0 auto; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; align-self: flex-start; margin-top: 2px; white-space: nowrap; }
+    .badge-submitted { background: #c6f6d5; color: #22543d; }
+    .badge-waiting { background: #fefcbf; color: #744210; }
+    .badge-error { background: #fed7d7; color: #742a2a; }
+    footer { text-align: center; color: #a0aec0; font-size: 0.75rem; padding: 28px 0 18px; }
   </style>
 </head>
 <body>
-  <h1>Kronus Communications</h1>
-  <h2>Spreadsheet Logger</h2>
-  <p class="clients">Paste the one-line entry from Claude, then hit Log.<br>
-  <strong>Format:</strong> client | outlet | brief | comment &nbsp;&nbsp;
-  <strong>Clients:</strong> kelly &nbsp;·&nbsp; michael &nbsp;·&nbsp; sam &nbsp;·&nbsp; kyle &nbsp;·&nbsp; pablo &nbsp;·&nbsp; kristen &nbsp;·&nbsp; michaels &nbsp;·&nbsp; andrew &nbsp;·&nbsp; sasha &nbsp;·&nbsp; rena</p>
+<header>
+  <h1>Kronus Communications &mdash; Spreadsheet Logger</h1>
+  <div class="clients-line">
+    Clients:
+    <span onclick="setClient('michael')">Michael G. Branson</span> &middot;
+    <span onclick="setClient('sam')">Sam Meenasian</span> &middot;
+    <span onclick="setClient('kyle')">Kyle Turner</span> &middot;
+    <span onclick="setClient('pablo')">Pablo Giordano</span> &middot;
+    <span onclick="setClient('kristen')">Kristen Kuminski</span> &middot;
+    <span onclick="setClient('michaels')">Michael Salvaggio</span> &middot;
+    <span onclick="setClient('andrew')">Andrew Gardner</span> &middot;
+    <span onclick="setClient('sasha')">Sasha Antoun</span> &middot;
+    <span onclick="setClient('rena')">Rena Awada</span> &middot;
+    <span onclick="setClient('clint')">Dr. Clint Salo</span>
+  </div>
+</header>
 
-  <textarea id="entry" placeholder="Paste entry here"></textarea>
-  <br>
-  <button onclick="logEntry()">Log to Spreadsheet</button>
-  <p class="hint">Tip: You can paste multiple entries at once, one per line.</p>
-  <div id="status"></div>
+<div class="container">
+  <div class="form-card">
+    <h2>Log a Media Entry</h2>
+    <label for="clientSelect">Client</label>
+    <select id="clientSelect" onchange="onClientChange()">
+      <option value="">— Select a client —</option>
+      <option value="michael">Michael G. Branson</option>
+      <option value="sam">Sam Meenasian</option>
+      <option value="kyle">Kyle Turner</option>
+      <option value="pablo">Pablo Giordano</option>
+      <option value="kristen">Kristen Kuminski</option>
+      <option value="michaels">Michael Salvaggio</option>
+      <option value="andrew">Andrew Gardner</option>
+      <option value="sasha">Sasha Antoun</option>
+      <option value="rena">Rena Awada</option>
+      <option value="clint">Dr. Clint Salo</option>
+    </select>
 
-  <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytNn6q1M-SMO0dKDRjnDX6lzG5lkm7DD5VO1PkbboUxzIVm0nM1MdT5k-YZaCb3xzozw/exec";
+    <label for="outletInput">Outlet Name</label>
+    <input type="text" id="outletInput" placeholder="e.g. Forbes, NPR, ABC News" />
 
-    const clients = {
-      michael:  { name: "Michael G. Branson",  sheetId: "1jQ28MTnfbl8L6im577p5LSeMWx2NLsnL_EW1YXfPw_k", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
-      sam:      { name: "Sam Meenasian",        sheetId: "1JfzibaNs0uLXfUOs9TZq5nN1K4lEyZCc7PQsX2_eVIo", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
-      kyle:     { name: "Kyle Turner",          sheetId: "10RKP_dODJ98x4iWmgVJVwdyJ7-tMW8bYGSDPdNl1Q6w", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
-      pablo:    { name: "Pablo Giordano",       sheetId: "1rECwTXxdUZ-lOsEodOeJxcHzAWVvntmeZl7AsSBjds8", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
-      kristen:  { name: "Kristen Kuminski",     sheetId: "10mq1lvv6G2_FHhK0kKh7vfjZ2BSZfp6GF_nI2eIEOxM", tab: "Media Opportunities", extraCol: true,  defaultStatus: "Waiting Approval" },
-      michaels: { name: "Michael Salvaggio",    sheetId: "1g7VLPxgrR9aHA0DIoj18mO-aS8GCJj0KYWrgf31f4jM", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
-      andrew:   { name: "Andrew Gardner",       sheetId: "1f0D-sIey7lUE2e1xwIoSoNl6aXLYYUTRpiEcozjIIMQ", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
-      sasha:    { name: "Sasha Antoun",         sheetId: "1M9I8U67lcjncVbAJMMbMYWNlm7EmR5qPpbxLnvnLmeY", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
-      rena:     { name: "Rena Awada",           sheetId: "1rCrouiTmwv6t-9O6VvkOiBj2KfQXpK1QfLyR_ZG_E6g", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
-      kelly:    { name: "Kelly",                sheetId: "",                                              tab: "Media Opportunities", extraCol: false, defaultStatus: "Waiting Approval" }
+    <label for="briefInput">Brief (10 words max)</label>
+    <input type="text" id="briefInput" placeholder="e.g. Request for expert comment on AI trends" />
+
+    <label for="commentInput">Full Comment / Pitch Text</label>
+    <textarea id="commentInput" placeholder="Paste the full proposed comment or pitch here..."></textarea>
+
+    <div class="row2">
+      <div>
+        <label for="statusSelect">Submission Status</label>
+        <select id="statusSelect">
+          <option value="Submitted">Submitted</option>
+          <option value="Waiting Approval">Waiting Approval</option>
+        </select>
+      </div>
+      <div>
+        <label for="approvedSelect" id="approvedLabel" style="display:none;">Approved As Is</label>
+        <select id="approvedSelect" style="display:none;">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn" id="submitBtn" onclick="submitEntry()">Log Entry</button>
+    <div class="status-msg" id="statusMsg"></div>
+  </div>
+
+  <div class="log-section">
+    <h2>Recent Entries (This Session)</h2>
+    <div id="logList"><p style="color:#a0aec0;font-size:0.85rem;">No entries yet this session.</p></div>
+  </div>
+</div>
+
+<footer>Kronus Communications &copy; 2025 &mdash; Internal Use Only</footer>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytNn6q1M-SMO0dKDRjnDX6lzG5lkm7DD5VO1PkbboUxzIVm0nM1MdT5k-YZaCb3xzozw/exec";
+
+  const CLIENTS = {
+    michael:  { name: "Michael G. Branson",  sheetId: "1jQ28MTnfbl8L6im577p5LSeMWx2NLsnL_EW1YXfPw_k", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+    sam:      { name: "Sam Meenasian",        sheetId: "1JfzibaNs0uLXfUOs9TZq5nN1K4lEyZCc7PQsX2_eVIo", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+    kyle:     { name: "Kyle Turner",          sheetId: "10RKP_dODJ98x4iWmgVJVwdyJ7-tMW8bYGSDPdNl1Q6w", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+    pablo:    { name: "Pablo Giordano",       sheetId: "1rECwTXxdUZ-lOsEodOeJxcHzAWVvntmeZl7AsSBjds8", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+    kristen:  { name: "Kristen Kuminski",     sheetId: "10mq1lvv6G2_FHhK0kKh7vfjZ2BSZfp6GF_nI2eIEOxM", tab: "Media Opportunities", extraCol: true,  defaultStatus: "Waiting Approval" },
+    michaels: { name: "Michael Salvaggio",   sheetId: "1g7VLPxgrR9aHA0DIoj18mO-aS8GCJj0KYWrgf31f4jM", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+    andrew:   { name: "Andrew Gardner",       sheetId: "1f0D-sIey7lUE2e1xwIoSoNl6aXLYYUTRpiEcozjIIMQ", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+    sasha:    { name: "Sasha Antoun",         sheetId: "1M9I8U67lcjncVbAJMMbMYWNlm7EmR5qPpbxLnvnLmeY", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+    rena:     { name: "Rena Awada",           sheetId: "1rCrouiTmwv6t-9O6VvkOiBj2KfQXpK1QfLyR_ZG_E6g", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+    clint:    { name: "Dr. Clint Salo",       sheetId: "1pcaTNBwtqsQy8qN0UMvKmIZUsa4lkQ3NZujSFhw44TU", tab: "Media Opportunities", extraCol: false, defaultStatus: "Submitted" },
+  };
+
+  const sessionLog = [];
+
+  function setClient(code) {
+    document.getElementById("clientSelect").value = code;
+    onClientChange();
+  }
+
+  function onClientChange() {
+    const code = document.getElementById("clientSelect").value;
+    if (!code) return;
+    const c = CLIENTS[code];
+    document.getElementById("statusSelect").value = c.defaultStatus;
+    const approvedLabel = document.getElementById("approvedLabel");
+    const approvedSelect = document.getElementById("approvedSelect");
+    if (c.extraCol) {
+      approvedLabel.style.display = "block";
+      approvedSelect.style.display = "block";
+    } else {
+      approvedLabel.style.display = "none";
+      approvedSelect.style.display = "none";
+    }
+  }
+
+  function showMsg(text, type) {
+    const el = document.getElementById("statusMsg");
+    el.textContent = text;
+    el.className = "status-msg " + type;
+  }
+
+  async function submitEntry() {
+    const code = document.getElementById("clientSelect").value;
+    const outlet = document.getElementById("outletInput").value.trim();
+    const brief = document.getElementById("briefInput").value.trim();
+    const comment = document.getElementById("commentInput").value.trim();
+    const status = document.getElementById("statusSelect").value;
+    const approved = document.getElementById("approvedSelect").value;
+
+    if (!code) { showMsg("Please select a client.", "error"); return; }
+    if (!outlet) { showMsg("Please enter an outlet name.", "error"); return; }
+    if (!comment) { showMsg("Please enter the comment/pitch text.", "error"); return; }
+
+    const client = CLIENTS[code];
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    showMsg("Submitting to Google Sheets...", "loading");
+
+    const payload = {
+      sheetId: client.sheetId,
+      tab: client.tab,
+      outlet,
+      brief,
+      comment,
+      status,
+      extraCol: client.extraCol,
+      approved: client.extraCol ? approved : null,
     };
 
-    async function logEntry() {
-      const raw = document.getElementById("entry").value.trim();
-      const statusEl = document.getElementById("status");
-      if (!raw) { statusEl.innerHTML = '<span class="error">Nothing to log.</span>'; return; }
-
-      const lines = raw.split("\n").map(l => l.trim()).filter(Boolean);
-      let results = [];
-
-      for (const line of lines) {
-        const parts = line.split("|").map(p => p.trim());
-        if (parts.length < 4) { results.push('<span class="error">Bad format: ' + line + '</span>'); continue; }
-
-        const [code, outlet, brief, ...commentParts] = parts;
-        const comment = commentParts.join(" | ");
-        const client = clients[code.toLowerCase()];
-
-        if (!client) {
-          const valid = Object.keys(clients).join(", ");
-          results.push('<span class="error">Unknown client "' + code + '". Valid: ' + valid + '</span>');
-          continue;
-        }
-
-        const payload = {
-          sheetId: client.sheetId,
-          tab: client.tab,
-          outlet,
-          brief,
-          comment,
-          extraCol: client.extraCol,
-          status: client.defaultStatus
-        };
-
-        try {
-          statusEl.innerHTML = 'Logging ' + client.name + '…';
-          const resp = await fetch(APPS_SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify(payload)
-          });
-          const text = await resp.text();
-          results.push('<span class="success">✓ Logged for ' + client.name + '</span>');
-        } catch (e) {
-          results.push('<span class="error">Error logging for ' + client.name + ': ' + e.message + '</span>');
-        }
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (json.result === "success") {
+        showMsg("✓ Logged successfully to " + client.name + "'s sheet!", "success");
+        addToSessionLog(code, client.name, outlet, brief, comment, status);
+        document.getElementById("outletInput").value = "";
+        document.getElementById("briefInput").value = "";
+        document.getElementById("commentInput").value = "";
+      } else {
+        showMsg("Error: " + (json.error || "Unknown error from Apps Script."), "error");
       }
-
-      statusEl.innerHTML = results.join("<br>");
-      if (results.every(r => r.includes("success"))) {
-        document.getElementById("entry").value = "";
-      }
+    } catch (e) {
+      showMsg("Network error: " + e.message, "error");
     }
-  </script>
+    btn.disabled = false;
+  }
+
+  function addToSessionLog(code, name, outlet, brief, comment, status) {
+    const entry = { code, name, outlet, brief, comment, status, time: new Date() };
+    sessionLog.unshift(entry);
+    renderLog();
+  }
+
+  function renderLog() {
+    const container = document.getElementById("logList");
+    if (sessionLog.length === 0) {
+      container.innerHTML = '<p style="color:#a0aec0;font-size:0.85rem;">No entries yet this session.</p>';
+      return;
+    }
+    container.innerHTML = sessionLog.map(e => {
+      const badgeClass = e.status === "Submitted" ? "badge-submitted" : "badge-waiting";
+      const timeStr = e.time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      return `<div class="log-entry">
+        <div class="meta">
+          <div class="time">${timeStr}</div>
+          <div class="client-badge">${e.code}</div>
+        </div>
+        <div class="body">
+          <div class="outlet">${e.outlet}</div>
+          ${e.brief ? `<div class="brief">${e.brief}</div>` : ""}
+          <div class="comment">${e.comment}</div>
+        </div>
+        <div class="status-badge ${badgeClass}">${e.status}</div>
+      </div>`;
+    }).join("");
+  }
+</script>
 </body>
 </html>
