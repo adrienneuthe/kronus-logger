@@ -143,8 +143,9 @@
         method: "POST",
         body: JSON.stringify(payload),
       });
-      const json = await res.json();
-      if (json.result === "success") {
+      let json = {};
+      try { json = await res.json(); } catch(e) {}
+      if (res.ok && json.result !== "error") {
         showMsg("✓ Logged to " + client.name + "'s sheet!", "success");
         sessionLog.unshift({ code: code.toLowerCase(), name: client.name, outlet, brief, comment, status: client.defaultStatus, time: new Date() });
         renderLog();
