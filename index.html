@@ -6,7 +6,7 @@
   <title>Kronus Communications - Spreadsheet Logger</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif; background: #f4f6f8; color: #1a1a2e; min-height: 100vh; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f8; color: #1a1a2e; min-height: 100vh; }
     header { background: #1a1a2e; color: white; padding: 18px 28px; }
     header h1 { font-size: 1.2rem; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 6px; }
     header .clients-line { font-size: 0.78rem; color: #a0aec0; }
@@ -67,6 +67,7 @@
   };
   function prefill(code) {
     const box = document.getElementById("entryInput");
+    if (box.value.trim() === "") box.value = code + " | ";
     box.focus();
   }
   function todayDate() {
@@ -82,11 +83,13 @@
   }
   async function submitEntry() {
     const raw = document.getElementById("entryInput").value.trim();
+    if (raw === "") { showMsg("Please paste a log entry.", "error"); return; }
     const parts = raw.split("|").map(s => s.trim());
     if (parts.length < 4) { showMsg("Format: clientcode | Outlet | Brief | Full comment", "error"); return; }
     const [code, outlet, brief, ...rest] = parts;
     const comment = rest.join("|").trim();
     const client = CLIENTS[code.toLowerCase()];
+    if (client === undefined) { showMsg("Unknown client code: " + code, "error"); return; }
     const btn = document.getElementById("submitBtn");
     btn.disabled = true;
     showMsg("Submitting to Google Sheets...", "loading");
@@ -96,6 +99,7 @@
       let json = {};
       try { json = await res.json(); } catch(e) {}
       if (res.ok && json.result !== "error") {
+        showMsg("Logged to " + client.name + " sheet!", "success");
         document.getElementById("entryInput").value = "";
       } else {
         showMsg("Error: " + (json.error || "Unknown error."), "error");
